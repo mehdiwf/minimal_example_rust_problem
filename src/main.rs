@@ -58,20 +58,15 @@ impl VectorField2D {
 
 }
 
-enum DerivDirection {
-    X_axis,
-    Y_axis}
-
 // -----------------------------------------
-// FUNCTIONS DEFINITION
+// FUNCTION DEFINITION
 // -----------------------------------------
 
-fn partial_deriv(a: &ScalarField2D,
-                 x: i32, y: i32,
-                 direction: DerivDirection,
-                 x_max: i32, y_max: i32) -> f64
+// computes the gradient of a scalar field at a given position
+fn grad_scalar(a: &ScalarField2D,
+               x: i32, y: i32,
+               x_max: i32, y_max: i32) -> vec2D
 {
-    // i+1 with Periodic Boundaries
     let ip = ((x+1) % x_max) as usize;
     // i-1 with Periodic Boundaries
     let im = ((x - 1 + x_max) % x_max) as usize;
@@ -81,31 +76,9 @@ fn partial_deriv(a: &ScalarField2D,
     let jm = ((y - 1 + y_max) % y_max) as usize;
     let (i, j) = (x as usize, y as usize);
 
-    match direction
-        {
-            DerivDirection::X_axis => {
-                let derivative =
-                    (a.get_pos(ip, j) - a.get_pos(im, j))/(2.);
-                return derivative;
-            },
-            DerivDirection::Y_axis => {
-                let derivative =
-                    (a.get_pos(i, jp) - a.get_pos(i, jm))/(2.);
-                return derivative;
-            }}}
-
-// computes the gradient of a scalar field at a given position
-fn grad_scalar(scalar_field: &ScalarField2D,
-               x: i32, y: i32,
-               x_max: i32, y_max: i32) -> vec2D
-{
     let grad = vec2D {
-        x: partial_deriv(&scalar_field, x, y,
-                         DerivDirection::X_axis,
-                         x_max, y_max),
-        y: partial_deriv(&scalar_field, x, y,
-                         DerivDirection::Y_axis,
-                         x_max, y_max)};
+        x: (a.get_pos(ip, j) - a.get_pos(im, j))/(2.),
+        y: (a.get_pos(i, jp) - a.get_pos(i, jm))/(2.)};
         
     return grad;
 }
